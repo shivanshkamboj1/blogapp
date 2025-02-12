@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const {generateToken} = require('../utils/authentication')
 const User = new mongoose.Schema({
     fullName:{
         type:String,
@@ -31,10 +32,12 @@ User.pre('save',async function(next){
     this.password=hashedPassword;
     next();
 })
-User.static('matchPassword',async function(email,password){
+User.static('matchPasswordAndToken',async function(email,password){
     const user=await this.findOne({email});
     if(!user)return false;
     const result =await bcrypt.compare(password,user.password);
-    return {...user,password:undefined};
+    if(!result)throw new Error("incorrect password")
+    const token = generateToken(user);
+    return token;
 })
 module.exports = mongoose.model("User",User)
