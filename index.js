@@ -8,9 +8,11 @@ const connectdb=require('./config/database')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.set("view engine","ejs");
 app.set("views",path.resolve("./views"))
 connectdb();
+
 app.get('/',(req,res)=>{
     res.render("home")
 })
